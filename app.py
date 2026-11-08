@@ -11,6 +11,17 @@ from pathlib import Path
 import streamlit as st
 import streamlit.components.v1 as components
 
+# --- Compatibilidad: funciona aunque los archivos de "historia/" esten sueltos en la raiz ---
+import os as _os, sys as _sys, types as _types
+_root = _os.path.dirname(_os.path.abspath(__file__))
+if not _os.path.isdir(_os.path.join(_root, "historia")) and "historia" not in _sys.modules:
+    _pkg = _types.ModuleType("historia")
+    _pkg.__path__ = [_root]
+    _sys.modules["historia"] = _pkg
+    _init = _os.path.join(_root, "__init__.py")
+    if _os.path.exists(_init):
+        exec(compile(open(_init, encoding="utf-8").read(), _init, "exec"), _pkg.__dict__)
+# --------------------------------------------------------------------------------------
 from historia import __version__
 from historia.analyze import analyze
 from historia.errors import HistoriaError
